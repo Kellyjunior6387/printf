@@ -6,40 +6,30 @@
  * @format: the string passed
  * return: count of words printed to stdout
  */
-int _printf(const char* format, ...)
+int _printf(const char *format, ...)
 {
-	char *s;
-	char c;
-	int count;
 	va_list args;
-
+	int count = 0;
+	unsigned int i;
+	specifier specifiers[] = {
+	{'c', print_char},
+	{'s', print_string},
+	{'%', print_percent},
+	};
 	va_start(args, format);
 
-	count = 0;
 	while (*format != '\0')
 	{
 	if (*format == '%')
 	{
 	format++;
-	if (*format == '%')
+	for (i = 0; i < sizeof(specifiers) / sizeof(specifiers[0]); i++)
 	{
-	_putchar('%');
+	if (*format == specifiers[i].code)
+	{
+	specifiers[i].function(args);
 	count++;
-	}
-	else if (*format == 'c')
-	{
-	c = va_arg(args, int);
-	_putchar(c);
-	count++;
-	}
-	else if (*format == 's')
-	{
-	s = va_arg(args, char*);
-	while (*s != '\0')
-	{
-	_putchar(*s);
-	s++;
-	count++;
+	break;
 	}
 	}
 	}
@@ -50,7 +40,6 @@ int _printf(const char* format, ...)
 	}
 	format++;
 	}
-
 	va_end(args);
 	return (count);
 }
